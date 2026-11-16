@@ -1,0 +1,11 @@
+# Real work lives in workspace/ — recreated by install.sh, never committed here
+workspace/
+
+# Local env and secrets
+.env
+*.local
+.direnv/
+
+# OS / editor noise
+.DS_Store
+.obsidian/workspace*.json
