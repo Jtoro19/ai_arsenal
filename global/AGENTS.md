@@ -54,3 +54,8 @@ Base rules every mode inherits. Keep this file short; mode folders add their own
 - Ask before destructive or history-rewriting operations: force-push, hard reset,
   rebase onto shared history, branch deletion.
 - Group related changes into one commit; keep unrelated changes apart.
+
+## Project brief
+
+- If the project has a BRIEF.md, read it first. It states the current task, scope
+  and definition of done. The global and mode rules still apply on top of it.
