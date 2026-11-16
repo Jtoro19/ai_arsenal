@@ -21,5 +21,13 @@ if [[ -f "$target/.envrc" ]]; then
   ( cd "$target" && direnv allow )
 fi
 
+# let both agents read the same rules
+if [[ -f "$target/AGENTS.md" ]]; then
+  ( cd "$target"
+    [[ -e CLAUDE.md ]] || ln -s AGENTS.md CLAUDE.md
+    [[ -e GEMINI.md ]] || ln -s AGENTS.md GEMINI.md
+  )
+fi
+
 echo "mode '$name' applied to: $target"
 echo "cd into it to activate."
