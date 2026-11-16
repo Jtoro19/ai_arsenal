@@ -27,3 +27,10 @@ Full project engineering (ML, analytics, apps). Follow Spec-Driven Development.
 ## Done means verified
 
 - Run tests and linters before declaring a task complete.
+
+## Data and charts
+
+- Chart titles, axis labels and legends in English.
+- Keep one consistent style across a project's charts (one palette, one font).
+- Label units and sources; never invent or estimate values.
+- Save figures as files; do not paste large tables into chat.

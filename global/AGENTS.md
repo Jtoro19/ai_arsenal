@@ -46,3 +46,11 @@ Base rules every mode inherits. Keep this file short; mode folders add their own
 - Keep each project's `AGENTS.md` concise (under ~2000 tokens).
 - When a memory tool (e.g. Engram) is available, persist decisions and
   root causes there instead of growing instruction files.
+
+## Git
+
+- Commit messages: English, imperative, concise (e.g. "Add lab mode template").
+- Never commit secrets, credentials, keys or .ovpn files.
+- Ask before destructive or history-rewriting operations: force-push, hard reset,
+  rebase onto shared history, branch deletion.
+- Group related changes into one commit; keep unrelated changes apart.

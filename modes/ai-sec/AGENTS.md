@@ -20,3 +20,5 @@ yourself. Never test models or services you are not authorized to test.
 
 - Local, authorized targets only.
 - Keep everything offline. Do not send test payloads to third-party services.
+- Payloads, prompts and findings are for your own authorized labs and coursework
+  only; never reuse them against third-party systems.
