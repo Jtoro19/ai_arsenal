@@ -1,4 +1,4 @@
-# ai_arsenal — Setup Guide
+# ai_arsenal: Setup Guide
 
 How to stand this environment up on a fresh EndeavourOS machine, and how the
 mode system works. Conversation language is Spanish; everything in this repo
@@ -8,10 +8,10 @@ is documented in English on purpose.
 
 Three layers:
 
-- **Base** — always installed, always on: git, direnv, (later) herdr, Claude Code.
-- **Arsenal** — installed but off by default: Ollama, OpenCode, gentle-ai + Engram,
+- **Base**: always installed, always on: git, direnv, (later) herdr, Claude Code.
+- **Arsenal**: installed but off by default: Ollama, OpenCode, gentle-ai + Engram,
   promptfoo. Turned on per task, never globally.
-- **Modes** — per-folder config (`.envrc` + `AGENTS.md`) that activates only what
+- **Modes**: per-folder config (`.envrc` + `AGENTS.md`) that activates only what
   a given task needs. Entering the folder turns the mode on; leaving turns it off.
 
 ## Prerequisites
@@ -57,7 +57,7 @@ For security, direnv ignores any `.envrc` until you approve it once:
     cd <mode-folder>
     direnv allow
 
-On a fresh clone the committed `.envrc` files start "blocked" — this is expected.
+On a fresh clone the committed `.envrc` files start "blocked", this is expected.
 
 ## How the mode system works
 
@@ -103,4 +103,4 @@ finds the repo from its own path regardless of where you run it.
   and must not land in this repo. Recreate the tree on a new machine with
   `mkdir -p workspace/{certifications,specialization_ai,university}`.
 - git does not track empty folders; `.gitkeep` files keep the skeleton alive.
-- The `.bashrc` PATH line must point to the real clone path — step 3 computes it.
+- The `.bashrc` PATH line must point to the real clone path, step 3 computes it.
