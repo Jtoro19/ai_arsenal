@@ -54,5 +54,6 @@ fi
 
 say "Allowing committed direnv configs"
 [ -f obsidian-vault/.envrc ] && ( cd obsidian-vault && direnv allow )
+[ -f .envrc ] && direnv allow
 
 say "Done. Run 'exec bash' to load PATH, AI_ARSENAL and direnv."

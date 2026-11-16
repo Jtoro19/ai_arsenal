@@ -2,7 +2,7 @@
 
 How to stand this environment up on a fresh EndeavourOS machine, and how the
 mode system works. Conversation language is Spanish; everything in this repo is
-documented in English on purpose.
+documented in English on purpose. For the whole-project description, see PROJECT.md.
 
 ## Concept
 
@@ -55,7 +55,8 @@ set those up separately if the script reports them missing.
 
 ## How the mode system works
 
-- modes/<name>/ holds a template: .envrc, AGENTS.md, sometimes .mcp.json.
+- modes/<name>/ holds a template: .envrc, AGENTS.md, sometimes .mcp.json and
+  .claude/skills/<skill>/SKILL.md.
 - mode <name> [target_dir] copies the template into a folder, runs direnv allow,
   and symlinks CLAUDE.md and GEMINI.md to AGENTS.md so both agents read the same
   rules. Default target is the current directory.
@@ -71,11 +72,28 @@ set those up separately if the script reports them missing.
 - scripts: quick automation, plain Claude Code, no methodology.
 - lab: authorized course labs over VPN, writeups to the vault.
 - ai-sec: AI and LLM security testing against local Ollama models, with promptfoo.
+- general: open-ended, human-guided work; no brief, conversation-led.
+- research: GAIA seedbed work, the IDS project and teaching material; Engram memory.
+- edit: maintenance of this repo itself (the repo root runs in this mode).
+
+Each code mode carries a skill under .claude/skills/ that activates with it.
 
 ## Apply a mode
 
     mode project workspace/specialization_ai/my-project
     cd workspace/specialization_ai/my-project
+
+## Project brief
+
+- templates/BRIEF.md is the starting template for a task. Fill it (by hand or by
+  asking Claude on the web), drop a BRIEF.md in the project root, and the agent
+  reads it first. The general mode does not use a brief.
+
+## Editing the arsenal
+
+- The repo root runs in edit mode. Open Claude Code there, describe the change
+  (a new mode, a changed rule), and it reads PROJECT.md, makes the change, keeps
+  PROJECT.md and this guide in sync, and commits.
 
 ## Add a new mode
 
@@ -87,11 +105,13 @@ set those up separately if the script reports them missing.
 
     ai_arsenal/
     install.sh          # bootstrap for a fresh machine
+    PROJECT.md          # the whole-project description
+    SETUP.md            # this file (usage and setup guide)
     README.md
-    SETUP.md            # this file
     global/AGENTS.md    # global rules, linked to ~/.claude/CLAUDE.md
     bin/mode(.sh)       # the mode command
     modes/<name>/       # one template per mode
+    templates/BRIEF.md  # project-brief template
     obsidian-vault/     # the notes vault
     workspace/          # your real work (gitignored, recreated by install.sh)
 
@@ -100,6 +120,6 @@ set those up separately if the script reports them missing.
 - workspace/ is gitignored: real work never lands in this repo.
 - git does not track empty folders; .gitkeep files keep the skeleton alive.
 - On a fresh clone, committed .envrc files start blocked until direnv allow
-  (install.sh does this for the vault).
+  (install.sh does this for the vault and the repo root).
 - Claude Pro and Max subscriptions only work in Claude Code, not in third-party
   tools, so OpenCode would need its own paid plan or local models.
