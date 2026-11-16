@@ -8,7 +8,7 @@ Base rules every mode inherits. Keep this file short; mode folders add their own
 - OS: EndeavourOS (Arch-based). Shell: bash. Terminal: kitty.
 - Hardware: Ryzen 9 9850X3D, Radeon RX 7900 XTX (24 GB VRAM, ROCm), 32 GB RAM.
 - Always give complete, ready-to-run bash commands. No Fish, no heredoc-free
-  workarounds needed — plain bash.
+  workarounds needed, just plain bash.
 
 ## Documentation language and style
 
