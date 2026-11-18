@@ -111,13 +111,23 @@ add_line() {
 }
 grep -qxF '# ai_arsenal' "$bashrc" || printf '\n# ai_arsenal\n' >>"$bashrc"
 npm_bin_rc="${npm_bin/#"$HOME"/\$HOME}"  # write $HOME, not the literal path
-# True only if an uncommented PATH= line has the dir as a whole PATH entry.
+# True if an uncommented PATH= (or PATH+=) line in ~/.bashrc lists the npm bin
+# dir as a whole entry. Quotes are ignored, entries are split on ':', and the
+# $HOME, ${HOME} and ~ spellings all count.
 bin_on_rc_path() {
-  local d
-  for d in "$npm_bin_rc" "$npm_bin"; do
-    grep -E '^[[:space:]]*(export[[:space:]]+)?PATH=' "$bashrc" \
-      | grep -qF -e "=\"$d:" -e "=$d:" -e ":$d:" -e ":$d\"" && return 0
-  done
+  local line rhs entry entries
+  local rel="${npm_bin_rc#\$HOME}"
+  while IFS= read -r line; do
+    [[ $line =~ ^[[:space:]]*(export[[:space:]]+)?PATH\+?=(.*)$ ]] || continue
+    rhs="${BASH_REMATCH[2]//[\"\']/}"
+    IFS=: read -ra entries <<<"$rhs"
+    for entry in "${entries[@]}"; do
+      entry="${entry%%[[:space:];]*}"   # drop a trailing '; cmd' or '# comment'
+      case "$entry" in
+        "$npm_bin" | "\$HOME$rel" | "\${HOME}$rel" | "~$rel") return 0 ;;
+      esac
+    done
+  done <"$bashrc"
   return 1
 }
 if bin_on_rc_path; then
