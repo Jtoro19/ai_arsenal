@@ -56,20 +56,28 @@ for line in \
   'export PATH=$PATH:$HOME/.local/bin # user bin'; do
   setup
   printf '%s\n' "$line" >"$H/.bashrc"
-  run
-  check "honored: $line" '[ "$(path_lines)" -eq 0 ]'
+  run; rc=$?
+  check "honored: $line" '[ $rc -eq 0 ] && [ "$(path_lines)" -eq 0 ]'
 done
 
 # Lines that only look similar do not count as on PATH
 for line in \
   '# export PATH="$HOME/.local/bin:$PATH"' \
   'export PATH="$HOME/.local/bin/extra:$PATH"' \
-  'alias lb="ls $HOME/.local/bin"'; do
+  'alias lb="ls $HOME/.local/bin"' \
+  'export PATH="$PATH" #:$HOME/.local/bin' \
+  'PATH=/usr/bin; X=a:$HOME/.local/bin'; do
   setup
   printf '%s\n' "$line" >"$H/.bashrc"
-  run
-  check "not counted: $line" '[ "$(path_lines)" -eq 1 ]'
+  run; rc=$?
+  check "not counted: $line" '[ $rc -eq 0 ] && [ "$(path_lines)" -eq 1 ]'
 done
+
+# Header present and an unterminated last PATH line: still honored
+setup
+printf '# ai_arsenal\nexport PATH="$HOME/.local/bin:$PATH"' >"$H/.bashrc"
+run; rc=$?
+check "honored: unterminated last line with header" '[ $rc -eq 0 ] && [ "$(path_lines)" -eq 1 ]'
 
 # pacman -T broken (exit 1, empty stdout) must abort, not report ok
 setup

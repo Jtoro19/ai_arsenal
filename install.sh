@@ -112,20 +112,28 @@ add_line() {
 grep -qxF '# ai_arsenal' "$bashrc" || printf '\n# ai_arsenal\n' >>"$bashrc"
 npm_bin_rc="${npm_bin/#"$HOME"/\$HOME}"  # write $HOME, not the literal path
 # True if an uncommented PATH= (or PATH+=) line in ~/.bashrc lists the npm bin
-# dir as a whole entry. Quotes are ignored, entries are split on ':', and the
-# $HOME, ${HOME} and ~ spellings all count.
+# dir as a whole entry. A trailing '# comment' or '; cmd' is cut off first, then
+# quotes are dropped and entries are split on ':'. When the dir is under $HOME,
+# the $HOME, ${HOME} and ~ spellings all count.
 bin_on_rc_path() {
   local line rhs entry entries
-  local rel="${npm_bin_rc#\$HOME}"
+  local under_home=""                      # npm bin dir minus the $HOME prefix
+  [[ $npm_bin_rc == "\$HOME/"* ]] && under_home="${npm_bin_rc#\$HOME}"
   while IFS= read -r line; do
     [[ $line =~ ^[[:space:]]*(export[[:space:]]+)?PATH\+?=(.*)$ ]] || continue
-    rhs="${BASH_REMATCH[2]//[\"\']/}"
+    rhs="${BASH_REMATCH[2]}"
+    rhs="${rhs%%;*}"                       # cut '; cmd'
+    rhs="${rhs%%[[:space:]]#*}"            # cut ' # comment'
+    rhs="${rhs//[\"\']/}"
     IFS=: read -ra entries <<<"$rhs"
     for entry in "${entries[@]}"; do
-      entry="${entry%%[[:space:];]*}"   # drop a trailing '; cmd' or '# comment'
-      case "$entry" in
-        "$npm_bin" | "\$HOME$rel" | "\${HOME}$rel" | "~$rel") return 0 ;;
-      esac
+      entry="${entry%%[[:space:]]*}"
+      [[ $entry == "$npm_bin" ]] && return 0
+      if [[ -n $under_home ]]; then
+        case "$entry" in
+          "\$HOME$under_home" | "\${HOME}$under_home" | "~$under_home") return 0 ;;
+        esac
+      fi
     done
   done <"$bashrc"
   return 1
