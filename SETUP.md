@@ -117,6 +117,7 @@ Each code mode carries a skill under .claude/skills/ that activates with it.
 
     ai_arsenal/
     install.sh          # bootstrap for a fresh machine
+    tests/              # install.test.sh: regression tests for install.sh
     PROJECT.md          # the whole-project description
     SETUP.md            # this file (usage and setup guide)
     README.md

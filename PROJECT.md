@@ -45,6 +45,7 @@ when you leave. Nothing is global that does not need to be.
 
     ai_arsenal/
     install.sh          # bootstrap for a fresh machine
+    tests/              # install.test.sh: regression tests for install.sh
     PROJECT.md          # this file: the whole-project description
     SETUP.md            # the usage and setup guide
     README.md

@@ -16,6 +16,17 @@ cd "$ARSENAL"
 say() { printf '\n==> %s\n' "$1"; }
 warn() { printf 'WARN: %s\n' "$1"; }
 
+# Print the packages pacman reports as missing. pacman -T exits 0 when all are
+# present and 127 when some are missing; any other exit is a real error.
+missing_pkgs() {
+  local out rc=0
+  out="$(pacman -T "$@")" || rc=$?
+  case "$rc" in
+    0 | 127) printf '%s' "$out" ;;
+    *) echo "ERROR: 'pacman -T' failed (exit $rc); check pacman before re-running." >&2; return 1 ;;
+  esac
+}
+
 say "ai_arsenal setup, repo at $ARSENAL"
 
 # Ollama is the base package plus a GPU backend add-on picked from the GPU vendor.
@@ -31,7 +42,7 @@ fi
 say "Installing base packages (pacman)"
 base_pkgs=(direnv ripgrep openvpn git base-devel nodejs npm uv ollama)
 [ -n "$ollama_backend" ] && base_pkgs+=("$ollama_backend")
-missing="$(pacman -T "${base_pkgs[@]}" || true)"
+missing="$(missing_pkgs "${base_pkgs[@]}")"
 if [ -z "$missing" ]; then
   echo "ok: all base packages present"
 else
@@ -45,7 +56,7 @@ else
 fi
 
 say "Installing AUR packages (yay)"
-missing="$(pacman -T gentle-ai engram-bin || true)"
+missing="$(missing_pkgs gentle-ai engram-bin)"
 if [ -z "$missing" ]; then
   echo "ok: all AUR packages present"
 elif command -v yay >/dev/null; then
@@ -86,6 +97,10 @@ else warn "Claude Code missing. Install with: yay -S claude-code"; fi
 say "Wiring ~/.bashrc (idempotent)"
 bashrc="$HOME/.bashrc"
 touch "$bashrc"
+# Appends below assume the file ends in a newline; add one if it does not.
+if [ -s "$bashrc" ] && [ -n "$(tail -c 1 "$bashrc")" ]; then
+  printf '\n' >>"$bashrc"
+fi
 add_line() {
   if grep -qxF "$1" "$bashrc"; then
     echo "ok: $1"
@@ -95,8 +110,17 @@ add_line() {
   fi
 }
 grep -qxF '# ai_arsenal' "$bashrc" || printf '\n# ai_arsenal\n' >>"$bashrc"
-npm_bin_rc="${npm_bin/#$HOME/\$HOME}"    # write $HOME, not the literal path
-if grep -qF -e "$npm_bin_rc" -e "$npm_bin" "$bashrc"; then
+npm_bin_rc="${npm_bin/#"$HOME"/\$HOME}"  # write $HOME, not the literal path
+# True only if an uncommented PATH= line has the dir as a whole PATH entry.
+bin_on_rc_path() {
+  local d
+  for d in "$npm_bin_rc" "$npm_bin"; do
+    grep -E '^[[:space:]]*(export[[:space:]]+)?PATH=' "$bashrc" \
+      | grep -qF -e "=\"$d:" -e "=$d:" -e ":$d:" -e ":$d\"" && return 0
+  done
+  return 1
+}
+if bin_on_rc_path; then
   echo "ok: $npm_bin_rc already on PATH in ~/.bashrc"
 else
   add_line "export PATH=\"$npm_bin_rc:\$PATH\""
