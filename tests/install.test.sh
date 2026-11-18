@@ -73,11 +73,16 @@ for line in \
   check "not counted: $line" '[ $rc -eq 0 ] && [ "$(path_lines)" -eq 1 ]'
 done
 
-# Header present and an unterminated last PATH line: still honored
+# Header present and an unterminated last PATH line: still honored. The
+# user's line is the only PATH export, so path_lines is 1; also prove nothing
+# was appended for it and nothing was glued onto it.
 setup
-printf '# ai_arsenal\nexport PATH="$HOME/.local/bin:$PATH"' >"$H/.bashrc"
+orig='# ai_arsenal
+export PATH="$HOME/.local/bin:$PATH"'
+printf '%s' "$orig" >"$H/.bashrc"
 run; rc=$?
-check "honored: unterminated last line with header" '[ $rc -eq 0 ] && [ "$(path_lines)" -eq 1 ]'
+check "honored: unterminated last line with header" \
+  '[ $rc -eq 0 ] && grep -q "already on PATH" "$H/out" && [ "$(head -n 2 "$H/.bashrc")" = "$orig" ] && [ "$(path_lines)" -eq 1 ]'
 
 # pacman -T broken (exit 1, empty stdout) must abort, not report ok
 setup
