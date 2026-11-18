@@ -29,22 +29,34 @@ recreates the workspace/ tree, links the global rules into ~/.claude, and allows
 the committed direnv configs. herdr and Claude Code are checked, not installed;
 set those up separately if the script reports them missing.
 
+- Run it as your user, never with sudo. It calls sudo only for pacman, and only
+  when packages are missing; if that fails it prints the exact command to run.
+- Safe to re-run: each step checks first, so a second run changes nothing.
+- Ollama gets the GPU backend for your hardware: ollama-cuda (NVIDIA),
+  ollama-rocm (AMD) or none (CPU).
+- npm global installs are per user: if the npm prefix is outside $HOME (the
+  default is the root-owned /usr), it is set to ~/.local in ~/.npmrc, and
+  ~/.local/bin is added to PATH in ~/.bashrc. promptfoo lands in ~/.local/bin.
+
 ## Manual setup (reference)
 
 1. Prerequisites: EndeavourOS, bash, kitty, git, yay, GitHub access.
 2. Clone as above.
 3. Install dependencies:
 
-       sudo pacman -S --needed direnv ripgrep openvpn ollama-rocm nodejs npm uv
+       sudo pacman -S --needed direnv ripgrep openvpn ollama nodejs npm uv
+       sudo pacman -S --needed ollama-cuda   # NVIDIA; ollama-rocm for AMD
        yay -S --needed gentle-ai engram-bin
+       npm config set prefix ~/.local        # per-user globals, never sudo npm
        npm install -g --allow-scripts=esbuild promptfoo
 
 4. Wire the shell (adds PATH, AI_ARSENAL and direnv; computes the real path):
 
        cd ~/Documents/ai_arsenal
        ARSENAL="$(pwd)"
-       printf '\n%s\n%s\n%s\n%s\n' \
+       printf '\n%s\n%s\n%s\n%s\n%s\n' \
          '# ai_arsenal' \
+         'export PATH="$HOME/.local/bin:$PATH"' \
          "export AI_ARSENAL=\"$ARSENAL\"" \
          "export PATH=\"$ARSENAL/bin:\$PATH\"" \
          'eval "$(direnv hook bash)"' \

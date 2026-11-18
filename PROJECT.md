@@ -12,7 +12,7 @@ when you leave. Nothing is global that does not need to be.
 ## Layers
 
 - Base, always on: git, direnv, herdr, Claude Code, the `mode` command.
-- Arsenal, installed but off by default: Ollama (ROCm), gentle-ai, Engram, promptfoo.
+- Arsenal, installed but off by default: Ollama (CUDA or ROCm), gentle-ai, Engram, promptfoo.
 - Modes, per-folder config that activates only what a task needs.
 
 ## The mode mechanism
@@ -62,7 +62,10 @@ when you leave. Nothing is global that does not need to be.
 - direnv per folder over global config (toggle per task).
 - Engram per mode, not global (memory is a feature of project and research modes).
 - gentle-ai run per project, not global (avoids a huge ~/AGENTS.md).
-- Ollama-ROCm local over cloud for ai-sec (targets are your own models, offline).
+- Ollama local over cloud for ai-sec (targets are your own models, offline); the GPU
+  backend (CUDA or ROCm) is picked per machine by install.sh.
+- install.sh runs as the user and is safe to re-run; npm globals are per user
+  (prefix ~/.local), never sudo npm.
 - bash shell; English for everything on disk; no em dashes.
 
 ## Keeping this file current
